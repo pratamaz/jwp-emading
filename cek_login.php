@@ -30,10 +30,10 @@ if (isset($_SESSION['username']) || isset($_SESSION['id_users'])) {
 
             // Cek Ketersediaan Data Username
             if ($rows != 0) {
-                $getPassword = mysqli_fetch_assoc($query)['password'];
-                if(password_verify($password, $getPassword)){
+                $getData = $query->fetch_assoc();
+                if(password_verify($password, $getData['password'])){
                     $_SESSION['username']=$username;
-                    $_SESSION['id_users']=mysqli_fetch_assoc($query)['id_users'];
+                    $_SESSION['id_users']=$getData['id_users'];
                     header('location: admin/index.php');
                 } else {
                     header('location: login.php?pesan=gagal');

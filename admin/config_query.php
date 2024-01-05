@@ -23,19 +23,73 @@ class database
     }
 
 
-    // Create Data tb_artikel
+    // Get Data tb_artikel Halaman Admin
     public function tampil_data()
     {
-        $data = mysqli_query($this->koneksi, "SELECT id_artikel, header, judul_artikel, isi_artikel, status_publish, tba.created_at, tba.updated_at, name, tba.id_users FROM tb_artikel tba join tb_users tbu on tba.id_users = tbu.id_users");
-        if($data){
-            if(mysqli_num_rows($data) > 0) {
-                while($row = mysqli_fetch_array($data)) {
+        $data = mysqli_query($this->koneksi, "SELECT id_artikel, header, judul_artikel, isi_artikel, status_publish, tba.created_at, 
+        tba.updated_at, name, tba.id_users FROM tb_artikel tba join tb_users tbu on tba.id_users = tbu.id_users");
+        if ($data) {
+            if (mysqli_num_rows($data) > 0) {
+                while ($row = mysqli_fetch_array($data)) {
                     $hasil[] = $row;
                 }
             } else {
                 $hasil = '0';
             }
-        } 
+        }
         return $hasil;
+    }
+
+    // Get Data tb_artikel Halaman Landing
+    public function tampil_data_landing()
+    {
+        $data = mysqli_query($this->koneksi, "SELECT id_artikel, header, judul_artikel, isi_artikel, status_publish, tba.created_at, 
+        tba.updated_at, name, tba.id_users FROM tb_artikel tba join tb_users tbu on tba.id_users = tbu.id_users WHERE status_publish='publish'");
+        if ($data) {
+            if (mysqli_num_rows($data) > 0) {
+                while ($row = mysqli_fetch_array($data)) {
+                    $hasil[] = $row;
+                }
+            } else {
+                $hasil = '0';
+            }
+        }
+        return $hasil;
+    }
+
+    public function tambah_data($header, $judul_artikel, $isi_artikel, $status_publish, $id_users)
+    {
+        $datetime = date("Y-m-d H:i:s");
+        $insert = mysqli_query($this->koneksi, "INSERT INTO tb_artikel (header, judul_artikel, isi_artikel, status_publish, id_users, created_at) 
+                    VALUES ('$header', '$judul_artikel', '$isi_artikel', '$status_publish', '$id_users', '$datetime')");
+        return $insert;
+    }
+
+    public function get_by_id($id_artikel)
+    {
+        $query = mysqli_query($this->koneksi, "SELECT id_artikel, header, judul_artikel, isi_artikel, status_publish, tba.created_at, 
+                tba.updated_at, name, tba.id_users FROM tb_artikel tba join tb_users tbu on tba.id_users = tbu.id_users WHERE id_artikel = '$id_artikel' ")
+            or die(mysqli_error($this->koneksi));
+
+        return $query->fetch_array();
+    }
+
+    public function update_data($header, $judul_artikel, $isi_artikel, $status_publish, $id_artikel, $id_users)
+    {
+        $datetime = date("Y-m-d H:i:s");
+        if ($header = 'not_set') {
+            $query = mysqli_query($this->koneksi, "UPDATE tb_artikel SET judul_artikel = '$judul_artikel', isi_artikel = '$isi_artikel',
+                    status_publish = '$status_publish', id_users = '$id_users', updated_at = '$datetime' WHERE id_artikel = '$id_artikel'") or die(mysqli_error($this->koneksi));
+            return $query;
+        } else {
+            $query = mysqli_query($this->koneksi, "UPDATE tb_artikel SET header = '$header', judul_artikel = '$judul_artikel', isi_artikel = '$isi_artikel',
+                    status_publish = '$status_publish', id_users = '$id_users', updated_at = '$datetime' WHERE id_artikel = '$id_artikel'") or die(mysqli_error($this->koneksi));
+            return $query;
+        }
+    }
+
+    public function delete_data($id_artikel){
+        $query = mysqli_query($this->koneksi, "DELETE FROM tb_artikel WHERE id_artikel = '$id_artikel'") or die(mysqli_error($this->koneksi));
+        return $query;
     }
 }
